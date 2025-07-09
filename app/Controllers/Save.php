@@ -706,33 +706,50 @@ class Save extends BaseController
         $uploadModel = new \App\Models\uploadFileModel();
         $validation = $this->validate([
             'csrf_fastcat'=>'required',
-            'request_id'=>['rules'=>'required|is_unique[files.request_id]',
-                           'errors'=>['required'=>'Please select any control number','is_unique'=>'Already submitted the attachment']],
+            'request_id'=>[
+                'rules'=>'required|is_unique[files.request_id]',
+                'errors'=>[
+                    'required'=>'Please select any control number',
+                    'is_unique'=>'Already submitted the attachment'
+                ]
+            ],
             'file'=>[
                 'rules' => 'uploaded[file]|mime_in[file,application/zip,application/x-zip-compressed,application/pdf]|max_size[file,25600]',
                 'errors' => [
                     'uploaded' => 'You must choose a file to upload.',
-                    'mime_in' => 'The file must be either a PDF document.',
+                    'mime_in' => 'The file must be a PDF or ZIP file.',
                     'max_size' => 'The file size must not exceed 25MB.',
                 ]
             ]
         ]);
-        if(!$validation)
-        {
-            return $this->response->SetJSON(['error' => $this->validator->getErrors()]);
+        if(!$validation) {
+            return $this->response->setJSON(['error' => $this->validator->getErrors()]);
         }
-        else
-        {
-            $file = $this->request->getFile('file');
-            $originalName = date('YmdHis').$file->getClientName();
-            $file->move('files/',$originalName);
-            $data = [
-                        'request_id'=>$this->request->getPost('request_id'),
-                        'accountID'=>session()->get('loggedUser'),
-                        'file'=>$originalName
-                    ];
-            $uploadModel->save($data);
-            return $this->response->SetJSON(['success' => 'Successfully uploaded']);
+
+        $file = $this->request->getFile('file');
+        if (!$file->isValid()) {
+            return $this->response->setJSON(['error' => 'Invalid file upload.']);
         }
+
+        // Use a unique name to avoid collisions
+        $originalName = uniqid() . '_' . $file->getClientName();
+
+        // Ensure the directory exists
+        if (!is_dir('files/')) {
+            mkdir('files/', 0755, true);
+        }
+
+        if (!$file->move('files/', $originalName)) {
+            return $this->response->setJSON(['error' => 'Failed to move uploaded file.']);
+        }
+
+        $data = [
+            'request_id'=>$this->request->getPost('request_id'),
+            'accountID'=>session()->get('loggedUser'),
+            'file'=>$originalName
+        ];
+        $uploadModel->save($data);
+
+        return $this->response->setJSON(['success' => 'Successfully uploaded']);
     }
 }
