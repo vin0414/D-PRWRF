@@ -29,7 +29,7 @@ class Save extends BaseController
             'serial_number'=>['rules'=>'required','errors'=>['required'=>'Serial/Part Number is required']],
             'size'=>['rules'=>'required','errors'=>['required'=>'Size is required']],
             'dimension'=>['rules'=>'required','errors'=>['required'=>'Dimension is required']],
-            'description'=>['rules'=>'required','errors'=>['required'=>'Description is required']],
+            'problem'=>['rules'=>'required','errors'=>['required'=>'Description is required']],
             'cause'=>['rules'=>'required','errors'=>['required'=>'Immediate Cause is required']],
             'work'=>['rules'=>'required','errors'=>['required'=>'Work/Action is required']],
             'approver'=>['rules'=>'required','errors'=>['required'=>'Select first approver']],
