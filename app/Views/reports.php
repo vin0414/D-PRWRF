@@ -36,15 +36,24 @@
                                         <button type="submit" class="btn btn-primary" id="btnGenerate">
                                             <i class="icon-copy dw dw-refresh"></i>&nbsp;Generate
                                         </button>
+                                        <a href="javascript:void(0);" onclick="exportFile(this)" class="btn btn-secondary" id="btnDownload">
+                                            <i class="icon-copy dw dw-download"></i>&nbsp;Download
+                                        </a>
                                     </div>
                                 </form>
                             </div>
                             <div class="col-lg-12 form-group">
-                                <table class="table table-bordered">
+                                <table class="table table-bordered table-sm" id="table">
                                     <thead>
-                                        <th>Control Number</th>
-                                        <th>Port/Vessel</th>
+                                        <th class="bg-primary text-white">Control Number</th>
+                                        <th class="bg-primary text-white">Equipment Name/Issues</th>
+                                        <th class="bg-primary text-white">Problem</th>
+                                        <th class="bg-primary text-white">Immediate Cause</th>
+                                        <th class="bg-primary text-white">Status</th>
                                     </thead>
+                                    <tbody id="result">
+                                        <tr><td colspan="5" class="text-center">No Record(s) found</td></tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -54,5 +63,36 @@
         </div>   
     </div>
     <?=view('templates/script') ?>
+    <script>
+        $('#form').on('submit',function(e){
+           e.preventDefault();
+           $('#result').html("<tr><td colspan='5' class='text-center'>Loading..</td></tr>"); 
+           let data = $(this).serialize();
+           $.ajax({
+            url:window.location.origin + "/fetch-report",
+            method:"GET",data:data,
+            success:function(response)
+            {
+                if(response === "")
+                {
+                    $('#result').html("<tr><td colspan='5' class='text-center'>No Record(s) found</td></tr>"); 
+                }
+                else
+                {
+                    $('#result').html(response); 
+                }
+            }
+           });
+        });
+
+        function exportFile(elem) {
+			var table = document.getElementById("table");
+			var html = table.outerHTML;
+			var url = 'data:application/vnd.ms-excel,' + escape(html); // Set your html table into url 
+			elem.setAttribute("href", url);
+			elem.setAttribute("download","d-prwrf-monitoring.xls"); // Choose the file name
+			return false;
+		}
+    </script>
 <?=view('templates/footer') ?>    
     

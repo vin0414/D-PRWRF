@@ -95,17 +95,14 @@
                                                         <td><?=$row->cause?></td>
                                                         <td>
                                                             <div class="dropdown">
-                                                            <a class="btn font-24 p-0 line-height-1 no-arrow dropdown-toggle"
+                                                            <a class="btn btn-primary btn-sm font-24 line-height-1 dropdown-toggle"
                                                                 href="#" role="button" data-toggle="dropdown">
                                                                 More
                                                             </a>
                                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                                                                <a class="dropdown-item" href="#">
-                                                                    <i class="dw dw-eye"></i> View
-                                                                </a>
-                                                                <a class="dropdown-item" href="#">
-                                                                    <i class="dw dw-list"></i> Items
-                                                                </a>
+                                                                <button type="button" class="dropdown-item viewRequest" value="<?=$row->request_id ?>">
+                                                                    <i class="dw dw-eye"></i> View Details
+                                                                </button>
                                                             </div>
                                                         </div>
                                                         </td>

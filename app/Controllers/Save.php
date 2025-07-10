@@ -65,13 +65,14 @@ class Save extends BaseController
                      'serial_number'=>$this->request->getPost('serial_number'),
                      'size'=>$this->request->getPost('size'),
                      'dimension'=>$this->request->getPost('dimension'),
-                     'problem'=>$this->request->getPost('description'),
+                     'problem'=>$this->request->getPost('problem'),
                      'cause'=>$this->request->getPost('cause'),
                      'work_required'=>$this->request->getPost('work'),
                      'status'=>0,'year'=>date('Y')];
             $requestModel->save($data);
             //get the last ID
             $requestdata = $requestModel->insertID;
+
             for($i = 0; $i < COUNT($this->request->getPost('description'));$i++)
             {
                 $record = [
@@ -320,7 +321,7 @@ class Save extends BaseController
         $builder->join('reviews b','b.control_number=a.control_number','LEFT');
         $builder->join('tblwarehouse c','c.warehouseID=a.from','INNER');
         $builder->join('files d','d.request_id=a.request_id','LEFT');
-        $builder->WHERENOTIN('b.status',['0','3']);
+        $builder->WHERENOTIN('a.status',[0,3]);
         $builder->WHERE('b.accountID',session()->get('loggedUser'));
         $builder->groupBy('b.review_id',);
 
@@ -751,5 +752,43 @@ class Save extends BaseController
         $uploadModel->save($data);
 
         return $this->response->setJSON(['success' => 'Successfully uploaded']);
+    }
+
+    public function fetchReport()
+    {
+        $from = $this->request->getGet('from');
+        if(empty($from)|| !is_numeric($from))
+        {
+            echo "<tr><td colspan='5' class='text-center'>No Record(s) found</td></tr>";
+        }
+        else
+        {
+            $output="";
+            $requestModel = new \App\Models\requestModel();
+            $records = $requestModel->WHERE('from',$from)->findAll();
+            foreach($records as $row)
+            {
+                $output.='<tr>
+                            <td>'.$row['control_number'].'</td>
+                            <td>'.$row['equipment_name'].'</td>
+                            <td>'.$row['problem'].'</td>
+                            <td>'.$row['cause'].'</td>';
+                            if($row['status']==0):
+                $output.='<td><span class="badge bg-warning text-white">For Review</span></td>';
+                            elseif($row['status']==1):
+                $output.='<td><span class="badge bg-info text-white">Reviewed</span></td>';
+                            elseif($row['status']==2):
+                $output.='<td><span class="badge bg-danger text-white">Declined</span></td>';
+                            elseif($row['status']==3):
+                $output.='<td><span class="badge bg-secondary text-white">Close</span></td>';
+                            elseif($row['status']==4):
+                $output.='<td><span class="badge bg-primary text-white">Accepted</span></td>';
+                            elseif($row['status']==5):
+                $output.='<td><span class="badge bg-success text-white">Verified</span></td>';
+                            endif;
+                $output.='</tr>';
+            }
+            echo $output;
+        }
     }
 }

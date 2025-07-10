@@ -25,6 +25,8 @@ $routes->post('accept-request','Save::acceptRequest');
 $routes->post('reject-request','Save::rejectRequest');
 $routes->get('view-request','Save::viewRequest');
 $routes->post('edit-status','Save::editStatus');
+//report
+$routes->get('fetch-report','Save::fetchReport');
 
 $routes->group('',['filter'=>'AuthCheck'],function($routes)
 {

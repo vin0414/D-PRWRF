@@ -101,8 +101,8 @@
                                 <label class="form-label">II. Equipment Defect/Problem</label>
                                 <div class="row g-3">
                                     <div class="col-lg-6 form-group">
-                                        <textarea name="description" class="form-control" placeholder="Description" required></textarea>
-                                        <div id="description-error" class="error-message text-danger text-sm"></div>
+                                        <textarea name="problem" class="form-control" placeholder="Description" required></textarea>
+                                        <div id="problem-error" class="error-message text-danger text-sm"></div>
                                     </div>
                                     <div class="col-lg-6 form-group">
                                         <textarea name="cause" class="form-control" placeholder="Immediate Cause" required></textarea>
