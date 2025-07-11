@@ -665,7 +665,7 @@ class Save extends BaseController
         }
         else
         {
-            echo "You do not have permission to reject requests";
+            echo "You do not have permission to view requests";
         }
     }
 
@@ -698,7 +698,7 @@ class Save extends BaseController
         }
         else
         {
-            echo "You do not have permission to reject requests";
+            echo "You do not have permission to edit status";
         }
     }
 
