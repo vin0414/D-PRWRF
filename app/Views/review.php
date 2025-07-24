@@ -65,6 +65,7 @@
                                                     <th class="bg-primary text-white">Equipment Name</th>
                                                     <th class="bg-primary text-white">Problem</th>
                                                     <th class="bg-primary text-white">Immediate Cause</th>
+                                                    <th class="bg-primary text-white">Assigned To</th>
                                                     <th class="bg-primary text-white">Status</th>
                                                     <th class="bg-primary text-white">Action</th>
                                                 </thead>
@@ -258,6 +259,9 @@
                 "data": "cause"
             },
             {
+                "data": "assign"
+            },
+            {
                 "data": "status"
             },
             {
@@ -317,7 +321,7 @@
             if (result.isConfirmed) {
                 $.ajax({
                     url: window.location.origin + "/accept-request",
-                    method:"POST",data:{value:$(this).val()},
+                    method:"POST",data:{value:$(this).val(),assign:$('#assigned_to').val()},
                     success:function(response)
                     {
                         if (response === "success") {

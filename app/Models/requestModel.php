@@ -14,7 +14,8 @@ class requestModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = ['accountID','control_number','from','date_prepared','date_needed',
                                    'equipment_name','equipment_model','equipment_maker','equipment_brand',
-                                   'serial_number','size','dimension','problem','cause','work_required','year','status'];
+                                   'serial_number','size','dimension','problem','cause','work_required',
+                                   'assigned_to','year','status'];
 
     // Dates
     protected $useTimestamps = true;

@@ -27,6 +27,7 @@ $routes->get('view-request','Save::viewRequest');
 $routes->post('edit-status','Save::editStatus');
 //report
 $routes->get('fetch-report','Save::fetchReport');
+$routes->get('print/(:any)','Save::print/$1');
 
 $routes->group('',['filter'=>'AuthCheck'],function($routes)
 {

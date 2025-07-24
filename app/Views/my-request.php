@@ -54,8 +54,8 @@
                                                     <td><?=$row->control_number ?></td>
                                                     <td><?=$row->warehouseName ?></td>
                                                     <td><?=$row->equipment_name ?></td>
-                                                    <td><?=$row->problem ?></td>
-                                                    <td><?=$row->cause ?></td>
+                                                    <td><?=substr($row->problem,0,50) ?>...</td>
+                                                    <td><?=substr($row->cause,0,50) ?>...</td>
                                                     <td>
                                                         <?php if($row->status==0):?>
                                                             <span class="badge bg-warning text-white">For Review</span>
@@ -76,6 +76,11 @@
                                                             <button type="button" class="btn btn-primary btn-sm upload" value="<?=$row->request_id?>">
                                                                 <i class="icon-copy dw dw-upload"></i>&nbsp;Upload
                                                             </button>
+                                                        <?php endif;?>
+                                                        <?php if($row->status==3): ?>
+                                                            <a href="<?=site_url('print/')?><?=$row->request_id?>" target="_blank" class="btn btn-sm btn-primary">
+                                                                <i class="icon-copy dw dw-print"></i>&nbsp;Print
+                                                            </a>
                                                         <?php endif;?>
                                                     </td>
                                                 </tr>

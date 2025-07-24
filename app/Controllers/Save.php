@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use Dompdf\Dompdf;
 
 class Save extends BaseController
 {
@@ -345,6 +346,7 @@ class Save extends BaseController
                 'equipment' => $row->equipment_name,
                 'problem' => $row->problem,
                 'cause' => $row->cause,
+                'assign' => $row->assigned_to,
                 'status' => ($row->status == 1) ? '<span class="badge bg-info text-white">Reviewed</span>' :
                             (($row->status == 2) ? '<span class="badge bg-danger text-white">Declined</span>' : 
                             (($row->status == 4) ? '<span class="badge bg-primary text-white">Accepted</span>' : 
@@ -358,10 +360,11 @@ class Save extends BaseController
                                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
                                     <button type="button" class="dropdown-item viewRequest" value="'.$row->request_id.'"
                                         ><i class="dw dw-eye"></i> View Details
-                                    </button>
-                                    <button type="button" class="dropdown-item edit" value="'.$row->request_id.'"
-                                        ><i class="dw dw-edit2"></i> Edit Status
-                                    </button>
+                                    </button>'
+                                    . ($row->status != 2 ? '
+                                    <button type="button" class="dropdown-item edit" value="' . $row->request_id . '">
+                                        <i class="dw dw-edit2"></i> Edit Status
+                                    </button>' : '') . '
                                     <a href="'.base_url('files/').$row->file.'" class="dropdown-item" target="_BLANK">
                                         <i class="dw dw-attachment"></i> Attachment
                                     </a>
@@ -474,8 +477,21 @@ class Save extends BaseController
                 $reviewModel = new \App\Models\reviewModel();
                 $review = $reviewModel->WHERE('control_number',$data['control_number'])->first();
                 if($review['status']==0):
-                $output.='  <button type="button" class="btn btn-primary btn-sm accept" value="'.$review['review_id'].'"><i class="icon-copy dw dw-check"></i>&nbsp;Accept</button>
-                            <button type="button" class="btn btn-danger btn-sm reject" value="'.$review['review_id'].'"><i class="icon-copy dw dw-cancel"></i>&nbsp;Cancel</button>';
+                $output.='<div class="row">';
+                $output.='<div class="col-lg-12 form-group">
+                            <label>Work Required Assigned To</label>
+                            <select class="form-control" name="assigned_to" id="assigned_to">
+                                <option value="">Choose</option>
+                                <option>Crew</option>
+                                <option>Technical/Engineer Personnel</option>
+                                <option>Service Provider</option>
+                            </select>
+                          </div>';
+                $output.='<div class="col-lg-12 form-group">
+                            <button type="button" class="btn btn-primary btn-sm accept" value="'.$review['review_id'].'"><i class="icon-copy dw dw-check"></i>&nbsp;Accept</button>
+                            <button type="button" class="btn btn-danger btn-sm reject" value="'.$review['review_id'].'"><i class="icon-copy dw dw-cancel"></i>&nbsp;Cancel</button>
+                          </div>';
+                $output.='</div>';
                 endif;
                 echo $output;
             } else {
@@ -497,9 +513,10 @@ class Save extends BaseController
             $requestModel = new \App\Models\requestModel();
             $systemLogsModel = new \App\Models\systemLogsModel();
             $val = $this->request->getPost('value');
-            if(empty($val) || !is_numeric($val))
+            $assign = $this->request->getPost('assign');
+            if((empty($val) || !is_numeric($val)) || empty($assign))
             {
-                echo "Invalid Request";
+                echo "Invalid! Please try again";
             }
             else
             {
@@ -508,7 +525,7 @@ class Save extends BaseController
                 //get the primary id of the request
                 $record = $requestModel->WHERE('control_number',$review['control_number'])->first();
                 //update the status of the request and review
-                $data = ['status'=>1];
+                $data = ['status'=>1,'assigned_to'=>$assign];
                 $requestModel->update($record['request_id'],$data);
                 $reviewModel->update($val,$data);
                 //logs
@@ -789,6 +806,33 @@ class Save extends BaseController
                 $output.='</tr>';
             }
             echo $output;
+        }
+    }
+
+    public function print($id)
+    {
+        $dompdf = new Dompdf();
+        if(empty($id)||!is_numeric($id))
+        {
+            echo "Invalid! Please try again";
+        }
+        else
+        {
+            $requestModel = new \App\Models\requestModel();
+            $record = $requestModel->find($id);
+            if(empty($record))
+            {
+                echo "No Record(s) found";
+            }
+            else
+            {
+                $template = 'Hi';
+                $dompdf->loadHtml($template);
+                $dompdf->setPaper('Letter', 'portrait');
+                $dompdf->render();
+                $dompdf->stream($record['control_number'].".pdf");
+                exit();
+            }
         }
     }
 }
