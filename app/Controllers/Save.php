@@ -826,9 +826,17 @@ class Save extends BaseController
             }
             else
             {
-                $template = 'Hi';
+                $template = '<html>
+                                <head>
+                                    <style>
+                                    table{font:size:12px;}
+                                    </style>
+                                </head>
+                                <body>
+                                </body>
+                             </html>';
                 $dompdf->loadHtml($template);
-                $dompdf->setPaper('Letter', 'portrait');
+                $dompdf->setPaper('A4', 'portrait');
                 $dompdf->render();
                 $dompdf->stream($record['control_number'].".pdf");
                 exit();
